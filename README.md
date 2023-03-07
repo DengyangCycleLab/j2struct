@@ -23,7 +23,7 @@ view the following java code
 
 is it very cool?
 
-It may also be very backward! XDDDDDDD
+it may also be very backward! XDDDDDDD
 # more
 j2struct can not only read struct binary, but also write struct binary!
 
