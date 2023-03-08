@@ -24,7 +24,13 @@ view the following java code
 is it very cool?
 
 it may also be very backward! XDDDDDDD
-# more
+# use
+J2Struct.readStruct(); or J2Struct.readSturctAutoAlign(); not StructUtil
+
+if your Class needs to be used as a structure object, use annotation @Struct(index=0).
+
+your Class attribute needs to be used as a structure attribute. please use the corresponding annotation. the index configuration represents the order of attributes in the structure
+
 j2struct can not only read struct binary, but also write struct binary!
 
 j2struct supports all basic types
