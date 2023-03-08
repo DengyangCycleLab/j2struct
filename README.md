@@ -8,7 +8,7 @@ view the following c/c++ code
 ![image](https://user-images.githubusercontent.com/24578032/223467236-685dfeae-ef22-4840-addf-ad9a166c4f17.png)
 ![image](https://user-images.githubusercontent.com/24578032/223469059-00ceb448-6891-4157-b266-21cefeedcb01.png)
 
-you need to read this binary file, but you ony know "java" language.
+you need to read this binary file, but you only know "java" language.
 
 you: "oh, my God, what should I do"
 
