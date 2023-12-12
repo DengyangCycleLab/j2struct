@@ -1,5 +1,6 @@
 package cn.zendee.j2struct;
 
+
 import cn.zendee.j2struct.annotation.*;
 
 import java.beans.BeanInfo;
@@ -12,6 +13,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class J2Struct {
     private static boolean isStruct(Class clz){
@@ -19,7 +23,7 @@ public class J2Struct {
         return struct != null;
     }
 
-    public static int getStructFirstAlignLength(Class<?> clz) throws Exception {
+    public static int getStructAlignLength(Class<?> clz) throws Exception {
         if(!isStruct(clz)){
             throw new Exception("Content is not a Struct");
         }
@@ -27,98 +31,121 @@ public class J2Struct {
         if(props.length == 0){
             return MyByte.byteLen;
         }
-        PropertyDescriptor prop = props[0];
-        Field field = clz.getDeclaredField(prop.getName());
-        field.setAccessible(true);
-        Struct struct = field.getAnnotation(Struct.class);
-        if(struct != null){
-            return getStructFirstAlignLength(clz);
-        }
-        StructArray structArray = field.getAnnotation(StructArray.class);
-        if(structArray != null){
-            return getStructFirstAlignLength(clz);
-        }
-        MyLong myLong = field.getAnnotation(MyLong.class);
-        if(myLong != null){
-            return MyLong.byteLen;
-        }
-        LongArray longArray = field.getAnnotation(LongArray.class);
-        if(longArray != null){
-            return LongArray.byteLen;
-        }
 
-        MyDouble myDouble = field.getAnnotation(MyDouble.class);
-        if(myDouble != null){
-            return MyDouble.byteLen;
-        }
-        DoubleArray doubleArray = field.getAnnotation(DoubleArray.class);
-        if(doubleArray != null){
-            return DoubleArray.byteLen;
-        }
+        List<Integer> alignLengthes = new ArrayList<>();
+        for(PropertyDescriptor prop:props){
+            Field field = clz.getDeclaredField(prop.getName());
+            Struct struct = field.getAnnotation(Struct.class);
+            if(struct != null){
+                return getStructAlignLength(field.getType());
+            }
+            StructArray structArray = field.getAnnotation(StructArray.class);
+            if(structArray != null){
+                return getStructAlignLength(field.getType().getComponentType());
+            }
+            MyLong myLong = field.getAnnotation(MyLong.class);
+            if(myLong != null){
+                alignLengthes.add(MyLong.byteLen);
+                continue;
+            }
+            LongArray longArray = field.getAnnotation(LongArray.class);
+            if(longArray != null){
+                alignLengthes.add(LongArray.byteLen);
+                continue;
+            }
 
-        MyInt myInt = field.getAnnotation(MyInt.class);
-        if(myInt != null){
-            return MyInt.byteLen;
-        }
-        IntArray intArray = field.getAnnotation(IntArray.class);
-        if(intArray != null){
-            return IntArray.byteLen;
-        }
+            MyDouble myDouble = field.getAnnotation(MyDouble.class);
+            if(myDouble != null){
+                alignLengthes.add(MyDouble.byteLen);
+                continue;
+            }
+            DoubleArray doubleArray = field.getAnnotation(DoubleArray.class);
+            if(doubleArray != null){
+                alignLengthes.add(DoubleArray.byteLen);
+                continue;
+            }
 
-        MyFloat myFloat = field.getAnnotation(MyFloat.class);
-        if(myFloat != null){
-            return MyFloat.byteLen;
-        }
-        FloatArray floatArray = field.getAnnotation(FloatArray.class);
-        if(floatArray != null){
-            return FloatArray.byteLen;
-        }
+            MyInt myInt = field.getAnnotation(MyInt.class);
+            if(myInt != null){
+                alignLengthes.add(MyInt.byteLen);
+                continue;
+            }
+            IntArray intArray = field.getAnnotation(IntArray.class);
+            if(intArray != null){
+                alignLengthes.add(IntArray.byteLen);
+                continue;
+            }
 
-        MyShort myShort = field.getAnnotation(MyShort.class);
-        if(myShort != null){
-            return MyShort.byteLen;
-        }
-        ShortArray shortArray = field.getAnnotation(ShortArray.class);
-        if(shortArray != null){
-            return ShortArray.byteLen;
-        }
+            MyFloat myFloat = field.getAnnotation(MyFloat.class);
+            if(myFloat != null){
+                alignLengthes.add(MyFloat.byteLen);
+                continue;
+            }
+            FloatArray floatArray = field.getAnnotation(FloatArray.class);
+            if(floatArray != null){
+                alignLengthes.add(FloatArray.byteLen);
+                continue;
+            }
 
-        WStringArray wStringArray = field.getAnnotation(WStringArray.class);
-        if(wStringArray != null){
-            return WStringArray.byteLen;
-        }
-        WString wString = field.getAnnotation(WString.class);
-        if(wString != null){
-            return WString.byteLen;
-        }
+            MyShort myShort = field.getAnnotation(MyShort.class);
+            if(myShort != null){
+                alignLengthes.add(MyShort.byteLen);
+                continue;
+            }
+            ShortArray shortArray = field.getAnnotation(ShortArray.class);
+            if(shortArray != null){
+                alignLengthes.add(ShortArray.byteLen);
+                continue;
+            }
 
-        MyString myString = field.getAnnotation(MyString.class);
-        if(myString != null){
-            return MyString.byteLen;
-        }
-        StringArray stringArray = field.getAnnotation(StringArray.class);
-        if(stringArray != null){
-            return StringArray.byteLen;
-        }
+            WStringArray wStringArray = field.getAnnotation(WStringArray.class);
+            if(wStringArray != null){
+                alignLengthes.add(WStringArray.byteLen);
+                continue;
+            }
+            WString wString = field.getAnnotation(WString.class);
+            if(wString != null){
+                alignLengthes.add(WString.byteLen);
+                continue;
+            }
 
-        Bool bool = field.getAnnotation(Bool.class);
-        if(bool != null){
-            return Bool.byteLen;
-        }
-        BoolArray boolArray = field.getAnnotation(BoolArray.class);
-        if(boolArray != null){
-            return BoolArray.byteLen;
-        }
+            MyString myString = field.getAnnotation(MyString.class);
+            if(myString != null){
+                alignLengthes.add(MyString.byteLen);
+                continue;
+            }
+            StringArray stringArray = field.getAnnotation(StringArray.class);
+            if(stringArray != null){
+                alignLengthes.add(StringArray.byteLen);
+                continue;
+            }
 
-        MyByte myByte = field.getAnnotation(MyByte.class);
-        if(myByte != null){
+            Bool bool = field.getAnnotation(Bool.class);
+            if(bool != null){
+                alignLengthes.add(Bool.byteLen);
+                continue;
+            }
+            BoolArray boolArray = field.getAnnotation(BoolArray.class);
+            if(boolArray != null){
+                alignLengthes.add(BoolArray.byteLen);
+                continue;
+            }
+
+            MyByte myByte = field.getAnnotation(MyByte.class);
+            if(myByte != null){
+                alignLengthes.add(MyByte.byteLen);
+                continue;
+            }
+            ByteArray byteArray = field.getAnnotation(ByteArray.class);
+            if(byteArray != null){
+                alignLengthes.add(ByteArray.byteLen);
+            }
+        }
+        if(alignLengthes.isEmpty()){
             return MyByte.byteLen;
         }
-        ByteArray byteArray = field.getAnnotation(ByteArray.class);
-        if(byteArray != null){
-            return ByteArray.byteLen;
-        }
-        return MyByte.byteLen;
+        alignLengthes.sort(Comparator.reverseOrder());
+        return alignLengthes.get(0);
     }
     public static PropertyDescriptor[] getProps(Class<?> clz) throws Exception {
         if(!isStruct(clz)){
@@ -132,7 +159,6 @@ public class J2Struct {
                 continue;
             }
             Field field = clz.getDeclaredField(tmp_prop.getName());
-            field.setAccessible(true);
             if(field.getAnnotations().length == 0){
                 continue;
             }
@@ -144,7 +170,6 @@ public class J2Struct {
                 continue;
             }
             Field field = clz.getDeclaredField(tmp_prop.getName());
-            field.setAccessible(true);
             MyByte myByte = field.getAnnotation(MyByte.class);
             if(myByte != null){
                 props[myByte.index()] = tmp_prop;
@@ -411,12 +436,12 @@ public class J2Struct {
             throw new Exception("Content is not a Struct");
         }
         if(byteAlign != null){
-            byteAlign.writeAlign(w,0,getStructFirstAlignLength(t.getClass()));
+            byteAlign.writeAlign(w,0,getStructAlignLength(t.getClass()));
         }
         PropertyDescriptor[] props = getProps(t.getClass());
         for(PropertyDescriptor prop:props){
             Field field = t.getClass().getDeclaredField(prop.getName());
-            field.setAccessible(true);
+
             MyByte myByte = field.getAnnotation(MyByte.class);
             if(myByte != null){
                 writeByte((byte)prop.getReadMethod().invoke(t),w,byteAlign);
@@ -858,12 +883,12 @@ public class J2Struct {
             throw new Exception("Content is not a Struct");
         }
         if(byteAlign != null){
-            byteAlign.readAlign(r,0,getStructFirstAlignLength(t.getClass()));
+            byteAlign.readAlign(r,0,getStructAlignLength(t.getClass()));
         }
         PropertyDescriptor[] props = getProps(t.getClass());
         for(PropertyDescriptor prop:props){
             Field field = t.getClass().getDeclaredField(prop.getName());
-            field.setAccessible(true);
+
             MyByte myByte = field.getAnnotation(MyByte.class);
             if(myByte != null){
                 prop.getWriteMethod().invoke(t,readByte(r,byteAlign));
@@ -970,7 +995,6 @@ public class J2Struct {
             StructArray structArray = field.getAnnotation(StructArray.class);
             if(structArray != null){
                 prop.getWriteMethod().invoke(t,new Object[]{readStructArray(r,structArray.length(),prop.getPropertyType().getComponentType(),byteAlign)});
-                continue;
             }
         }
     }
